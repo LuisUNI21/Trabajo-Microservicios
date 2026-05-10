@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Operations.Middleware
 {
-    public class GlobalExceptionMiddleware
+    public class MiddlewareGlobal
     {
         private readonly RequestDelegate _next;
 
-        public GlobalExceptionMiddleware(RequestDelegate next)
+        public MiddlewareGlobal(RequestDelegate next)
         {
             _next = next;
         }
@@ -36,7 +36,7 @@ namespace Operations.Middleware
             {
                 StatusCode = context.Response.StatusCode,
                 Message = "Ocurrió un error inesperado en la operación.",
-                Detail = exception.Message // Puedes remover el 'Detail' para mayor seguridad en producción
+                Detail = exception.Message 
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));

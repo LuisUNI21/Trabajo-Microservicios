@@ -16,7 +16,7 @@ var app=builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseMiddleware<MiddlewareGlobal>();
 app.UseMiddleware<CustomAuthMiddleware>();
 app.MapControllers();
 app.Run();
