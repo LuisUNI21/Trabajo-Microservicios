@@ -13,8 +13,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddDbContext<AppDbContext>(o=>o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 var app=builder.Build();
+
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<CustomAuthMiddleware>();
 app.MapControllers();
 app.Run();
