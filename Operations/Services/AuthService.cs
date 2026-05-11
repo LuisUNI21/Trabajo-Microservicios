@@ -17,38 +17,51 @@ namespace Operations.Services
             _passwordHasher = passwordHasher; 
         }
 
-        public Usuario ValidarUsuario(string u, string p)
+      public Usuario ValidarUsuario(string u, string p)
+{
+    using var cn = new SqlConnection(
+        _c.GetConnectionString("DefaultConnection")
+    );
+
+    using var cmd = new SqlCommand(
+        "SELECT Id, Username, PasswordHash, Rol FROM Usuarios WHERE Username = @User AND Estado = 1",
+        cn
+    );
+
+    cmd.Parameters.AddWithValue("@User", u.Trim());
+
+    cn.Open();
+
+    using var r = cmd.ExecuteReader();
+
+    if (r.Read())
+    {
+        string hash = r["PasswordHash"]?.ToString()?.Trim();
+
+        System.Console.WriteLine("Usuario encontrado: " + r["Username"]);
+        System.Console.WriteLine("Password recibido: [" + p + "]");
+        System.Console.WriteLine("Hash BD: [" + hash + "]");
+        System.Console.WriteLine("Longitud hash: " + hash.Length);
+
+        bool ok = _passwordHasher.VerifyPassword(
+            p.Trim(),
+            hash
+        );
+
+        System.Console.WriteLine("Resultado BCrypt: " + ok);
+
+        if (ok)
         {
-            using var cn = new SqlConnection(_c.GetConnectionString("DefaultConnection"));
-            
-            
-            using var cmd = new SqlCommand("SELECT Id, Username, PasswordHash, Rol FROM Usuarios WHERE Username = @User AND Estado = 1", cn);
-            cmd.Parameters.AddWithValue("@User", u);
-
-            cn.Open();
-            using var r = cmd.ExecuteReader();
-
-            if (r.Read())
+            return new Usuario
             {
-                
-                string hashAlmacenado = r["PasswordHash"].ToString();
-
-            
-                bool esValida = _passwordHasher.VerifyPassword(p, hashAlmacenado);
-
-                if (esValida)
-                {
-                    
-                    return new Usuario
-                    {
-                        Id = (int)r["Id"],
-                        Username = r["Username"].ToString(),
-                        Rol = r["Rol"].ToString()
-                    };
-                }
-            }
-
-            return null;
+                Id = (int)r["Id"],
+                Username = r["Username"].ToString(),
+                Rol = r["Rol"].ToString()
+            };
         }
+    }
+
+    return null;
+       }
     }
 }
