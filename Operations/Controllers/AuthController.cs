@@ -7,7 +7,8 @@ namespace Operations.Controllers {
 [Route("api/auth")]
 public class AuthController:ControllerBase{
  private readonly AuthService _auth;
- public AuthController(AuthService a){_auth=a;}
+ 
+ [Microsoft.AspNetCore.Authorization.AllowAnonymous]
  [HttpPost("login")]
  public IActionResult Login([FromBody]LoginRequestDTO r){
   var u=_auth.ValidarUsuario(r.Username,r.Password);
